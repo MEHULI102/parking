@@ -1,22 +1,72 @@
-*{
-  margin: 0px;
-
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-#container, #panel{
-  border: 2px solid black;
+/* Login / Register Page Styling */
+body.login-page {
+  background-color: #ffe6f0;
+  font-family: sans-serif;
 }
 
-#panel{
-  width:80%;
-  margin: auto;
-  height: 800px;
+.login-page #container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-#input-form{
-  border: 1px solid blue;
-  width: 600px;
-  height: 600px;
-  margin: auto;
-  border-radius: 10px;
+.login-page #panel {
+  width: 400px;
+  padding: 30px;
+  border-radius: 15px;
+  background-color: #fff0f5;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.login-page #input-form {
+  width: 100%;
+}
+
+.login-page h2 {
+  color: #c2185b;
+}
+
+/* User Dashboard Styling */
+body.dashboard-page {
+  background-color: #61948c !important;
+  font-family: sans-serif;
+}
+
+.dashboard-page #panel {
+  padding: 20px;
+  width: 100%;
+  margin: 0;
+  min-height: 100vh;
+  border-radius: 0;
+  background: white;
+}
+
+.dashboard-page #input-form {
+  padding: 20px;
+  min-height: auto;
+}
+
+.dashboard-page .card {
+  width: 100%;
+  max-width: 350px;
+  margin: 0 auto 20px auto;
+}
+
+.dashboard-page table {
+  width: 100%;
+  table-layout: auto;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.dashboard-page th, .dashboard-page td {
+  white-space: normal;
 }
