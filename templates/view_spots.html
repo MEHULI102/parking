@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Parking Spots - {{ lot.name }}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+
+  <h2>Parking Spots for <span class="text-primary">{{ lot.name }}</span></h2>
+  <h5>Location: {{ lot.location }}</h5>
+
+  <table class="table table-striped mt-4">
+    <thead>
+      <tr>
+        <th>Spot ID</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for spot in spots %}
+      <tr>
+        <td>{{ spot.id }}</td>
+        <td>
+          {% if spot.status == 'A' %}
+            <span class="badge bg-success">Available</span>
+          {% else %}
+            <span class="badge bg-danger">Occupied</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <a href="/admin_dashboard" class="btn btn-primary">Back to Dashboard</a>
+
+</body>
+</html>

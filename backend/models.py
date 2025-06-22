@@ -12,19 +12,39 @@ class User_Info(db.Model):
     pwd = db.Column(db.String(100))
     role = db.Column(db.Integer, default=1)  # 0=admin, 1=user
 
-class List(db.Model):
-    __tablename__ = "lists"
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String, nullable=False)
-    description = db.Column(db.String, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey(User_Info.id), nullable=False)
+    reservations = db.relationship('Reservation', backref='user', lazy=True)
+
 
 class ParkingLot(db.Model):
     __tablename__ = "parking_lot"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     location = db.Column(db.String(100))
+    price_per_hour = db.Column(db.Float, nullable=False)   
+    total_spots = db.Column(db.Integer, nullable=False)    
 
+
+
+class ParkingSpot(db.Model):
+    __tablename__ = "parking_spots"
+    id = db.Column(db.Integer, primary_key=True)
+    lot_id = db.Column(db.Integer, db.ForeignKey('parking_lot.id'), nullable=False)
+    status = db.Column(db.String(1), nullable=False, default='A')  # A=Available, O=Occupied
+
+    reservations = db.relationship('Reservation', backref='spot', lazy=True)
+
+
+class Reservation(db.Model):
+    __tablename__ = "reservations"
+    id = db.Column(db.Integer, primary_key=True)
+    spot_id = db.Column(db.Integer, db.ForeignKey('parking_spots.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user_info.id'), nullable=False)
+    parking_timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    leaving_timestamp = db.Column(db.DateTime, nullable=True)
+    cost = db.Column(db.Float)
+
+
+# Optional: Extra Card model if you're using it elsewhere
 class Card(db.Model):
     __tablename__ = "cards"
     id = db.Column(db.Integer, primary_key=True)
@@ -39,6 +59,5 @@ class Card(db.Model):
     priority = db.Column(db.Integer)
     link_url = db.Column(db.String(255))
 
-    # Foreign Keys
-    user_id = db.Column(db.Integer, db.ForeignKey(User_Info.id), nullable=True)
-    lot_id = db.Column(db.Integer, db.ForeignKey(ParkingLot.id), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user_info.id'), nullable=True)
+    lot_id = db.Column(db.Integer, db.ForeignKey('parking_lot.id'), nullable=True)

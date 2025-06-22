@@ -100,3 +100,180 @@ body.register-page {
   color: #1976d2; /* strong blue */
 }
 
+/* Add Lot Page Styles */
+body.add-lot-page {
+  background: #eef9ee; /* very light green */
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.add-lot-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 1rem;
+}
+
+.add-lot-card {
+  background: #d4edda; /* pale green */
+  border-left: 5px solid #28a745; /* green accent */
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  max-width: 480px;
+  width: 100%;
+}
+
+.add-lot-title {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #155724; /* dark green */
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-family: 'Brush Script MT', cursive;
+}
+
+.add-lot-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.add-lot-form .form-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #155724;
+  margin-bottom: 0.3rem;
+}
+
+.add-lot-form .form-control {
+  border: 2px solid #28a745;
+  border-radius: 0.5rem;
+  padding: 0.6rem;
+}
+
+.add-lot-form .form-control:focus {
+  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+
+.form-actions .btn {
+  min-width: 120px;
+  font-weight: 600;
+}
+
+/* Admin Bookings Page Styles */
+body.admin-bookings-page {
+  background: #faf5ff;  /* very light lavender */
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.bookings-container {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+
+.bookings-card {
+  background: #f2ebfb;               /* pale lavender */
+  border-left: 5px solid #6f42c1;    /* purple accent */
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  max-width: 900px;
+  width: 100%;
+}
+
+.bookings-title {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #4e2a84;                    /* dark purple */
+  margin-bottom: 1rem;
+  font-family: 'Brush Script MT', cursive;
+  text-align: center;
+}
+
+.back-btn {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  color: #4e2a84;
+  background: #ffffff;
+  border: 1px solid #6f42c1;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+}
+
+.back-btn:hover {
+  background: #f8f0ff;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.bookings-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.bookings-table th {
+  background: #e6dbf7;               /* very light purple header */
+  color: #4e2a84;
+  font-weight: 600;
+  border-bottom: 2px solid #6f42c1;
+  text-align: center;
+}
+
+.bookings-table td {
+  padding: 0.75rem;
+  vertical-align: middle;
+  text-align: center;
+  border-top: 1px solid #ddd;
+}
+
+.bookings-table tr:nth-child(even) {
+  background: #f9f5fe;               /* alternating pale rows */
+}
+
+.bookings-table tr:hover {
+  background: #f1e8fd;               /* highlight on hover */
+}
+
+
+
+
+
+
+/* Admin Dashboard spot grid */
+.spot-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+}
+.spot-grid .btn {
+  width: 100%;
+  padding: 0.4rem 0;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Fixed “Add” button */
+.add-btn {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  border-radius: 0.25rem;
+  padding: 0.75rem 1.25rem;
+  font-size: 1.1rem;
+  z-index: 1000;
+}
+
+/* Ensure admin page font */
+.admin-dashboard-page {
+  font-family: sans-serif;
+}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Spot {{ spot.id }} Details</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4 bg-light">
+
+  <h2>Spot #{{ spot.id }} — {{ 'Available' if spot.status=='A' else 'Occupied' }}</h2>
+  <p><strong>Lot ID:</strong> {{ spot.lot_id }}</p>
+
+  {% if reservation %}
+    <h4>Latest Reservation</h4>
+    <p><strong>User:</strong> {{ reservation.user_email }}</p>
+    <p><strong>In:</strong> {{ reservation.parking_timestamp }}</p>
+    <p><strong>Out:</strong> {{ reservation.leaving_timestamp or '–' }}</p>
+    <p><strong>Cost:</strong> ₹{{ reservation.cost }}</p>
+  {% else %}
+    <p>No reservation history.</p>
+  {% endif %}
+
+  <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary mt-3">← Back</a>
+</body>
+</html>
