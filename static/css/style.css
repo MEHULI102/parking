@@ -70,3 +70,33 @@ body.dashboard-page {
 .dashboard-page th, .dashboard-page td {
   white-space: normal;
 }
+
+/* Register Page Styling */
+body.register-page {
+  background-color: #e6f2ff; /* light blue background */
+  font-family: sans-serif;
+}
+
+.register-page #container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.register-page #panel {
+  width: 400px;
+  padding: 30px;
+  border-radius: 15px;
+  background-color: #f0f8ff; /* blue-tinted white */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.register-page #input-form {
+  width: 100%;
+}
+
+.register-page h2 {
+  color: #1976d2; /* strong blue */
+}
+

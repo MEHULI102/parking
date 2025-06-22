@@ -8,7 +8,8 @@
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <title>Register</title>
 </head>
-<body>
+<body class="register-page">
+
   <div id="container" class="d-flex justify-content-center align-items-center vh-100">
     <div id="panel" class="p-4 shadow rounded bg-light">
       <div id="input-form">
@@ -35,6 +36,13 @@
           <div class="mb-3">
             <label for="confirmPassword" class="form-label">Confirm Password</label>
             <input type="password" class="form-control" name="cpwd" id="confirmPassword" required>
+          </div>
+          <div class="mb-3">
+            <label for="role" class="form-label">Role</label>
+            <select class="form-select" name="role" id="role" required>
+              <option value="1">User</option>
+              <option value="0">Admin</option>
+            </select>
           </div>
           <button type="submit" class="btn btn-primary w-100">Register</button>
           Existing user? <a href="/login">Login</a>

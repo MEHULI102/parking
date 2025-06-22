@@ -18,7 +18,7 @@ def init_app(app):
             usr = User_Info.query.filter_by(user_name=uname, email=email, pwd=pwd).first()
 
             if usr and usr.role == 0:
-                return render_template("admin_dashboard.html")
+                return admin_dashboard()  # redirect to admin_dashboard view
             elif usr and usr.role == 1:
                 return render_template("user_dashboard.html")
             else:
@@ -28,13 +28,14 @@ def init_app(app):
 
     @app.route("/register", methods=["GET", "POST"])
     def user_register():
-        message = ""  # Initialize message at the start
+        message = ""
 
         if request.method == "POST":
             uname = request.form.get("uname")
             email = request.form.get("email")
             pwd = request.form.get("pwd")
             cpwd = request.form.get("cpwd")
+            role = int(request.form.get("role"))
 
             if pwd != cpwd:
                 message = "Passwords do not match."
@@ -43,10 +44,26 @@ def init_app(app):
                 if existing_user:
                     message = "User already exists."
                 else:
-                    new_user = User_Info(full_name=uname, user_name=uname, email=email, pwd=pwd, role=1)
+                    new_user = User_Info(full_name=uname, user_name=uname, email=email, pwd=pwd, role=role)
                     db.session.add(new_user)
                     db.session.commit()
                     message = "You have been registered successfully."
-                    return render_template("login.html", msg=message)  # fixed typo
+                    return render_template("login.html", msg=message)
 
         return render_template("register.html", message=message)
+
+    @app.route("/admin_dashboard")
+    def admin_dashboard():
+        users = User_Info.query.filter_by(role=1).all()
+        return render_template("admin_dashboard.html", users=users)
+
+    # @app.route("/list/add/<int:user_id>", methods=["GET", "POST"])
+    # def new_list(user_id):
+    #     if request.method == "POST":
+    #         title = request.form.get("title")
+    #         description = request.form.get("description")
+    #         list_obj=Lists(title=title, description=description, user_id=user_id)
+    #         db.session.add(list_obj)
+    #         db.session.commit()
+    
+    #         return render_template("user_dashboard.html", name=user_info.user_name, lists=user_info.lists)

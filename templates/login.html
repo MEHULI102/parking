@@ -8,13 +8,13 @@
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <title>Login</title>
 </head>
-<body class="login-page">   <!-- ✅ this is the important line -->
+<body class="login-page">   
 
   <div id="container" class="d-flex justify-content-center align-items-center vh-100">
     <div id="panel" class="p-4 shadow rounded bg-light">
-      <div id="input-form" style="height: 400px;">
+      <div id="input-form">
         <h2 class="text-center mb-4">Login</h2>
-        <form action="/login" method="POST" >
+        <form action="/login" method="POST">
           <div class="mb-3">
             <label for="uname" class="form-label">Username</label>
             <input type="text" class="form-control" name="uname" id="uname" aria-describedby="userHelp">
@@ -28,6 +28,13 @@
           <div class="mb-3">
             <label for="pwd" class="form-label">Password</label>
             <input type="password" class="form-control" name="pwd" id="pwd">
+          </div>
+          <div class="mb-3">
+            <label for="role" class="form-label">Role</label>
+            <select class="form-select" name="role" id="role" required>
+              <option value="1">User</option>
+              <option value="0">Admin</option>
+            </select>
           </div>
           <div class="mb-3 form-check">
             <input type="checkbox" class="form-check-input" id="exampleCheck1">
