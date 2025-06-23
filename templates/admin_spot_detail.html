@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Spot Details</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="p-4 bg-light">
+
+<div class="container">
+
+  <div class="card p-4 shadow-sm">
+    <h4 class="mb-3">Parking Spot #{{ spot.id }}</h4>
+
+    <form method="POST" action="#">
+      <div class="mb-3">
+        <label class="form-label">Status</label>
+        <select class="form-select" disabled>
+          <option {% if spot.status == 'A' %}selected{% endif %}>Available</option>
+          <option {% if spot.status == 'O' %}selected{% endif %}>Occupied</option>
+        </select>
+      </div>
+
+      {% if reservation %}
+      <a href="{{ url_for('delete_booking', booking_id=reservation.id) }}" class="btn btn-danger mb-2">
+        Delete Booking
+      </a>
+      {% endif %}
+
+      <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Back</a>
+    </form>
+  </div>
+
+  {% if reservation %}
+  <div class="card p-4 shadow-sm mt-4 bg-warning-subtle">
+    <h5 class="mb-3">Occupied Spot Details</h5>
+    <p><strong>Reservation ID:</strong> {{ reservation.id }}</p>
+    <p><strong>Customer Email:</strong> {{ reservation.user_email }}</p>
+    <p><strong>Check-in Time:</strong> {{ reservation.in_time }}</p>
+    <p><strong>Parking Cost (₹):</strong> {{ reservation.cost }}</p>
+    <p><strong>Status:</strong> Active</p>
+  </div>
+  {% endif %}
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

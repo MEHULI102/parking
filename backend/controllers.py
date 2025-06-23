@@ -135,10 +135,6 @@ def init_app(app):
 
         return redirect(url_for('admin_dashboard'))
 
-    @app.route("/spots/<int:lot_id>")
-    def view_spots(lot_id):
-        spots = ParkingSpot.query.filter_by(lot_id=lot_id).all()
-        return render_template("admin_view_spots.html", spots=spots, lot_id=lot_id)
 
     @app.route("/bookings")
     def view_bookings():
@@ -154,6 +150,94 @@ def init_app(app):
             .filter_by(spot_id=spot.id) \
             .order_by(Reservation.id.desc()) \
             .first()
-        return render_template("spot_detail.html",
+        return render_template("admin_spot_detail.html",
                                spot=spot,
                                reservation=reservation)
+    
+    @app.route("/delete_booking/<int:booking_id>")
+    def delete_booking(booking_id):
+        booking = Reservation.query.get_or_404(booking_id)
+        spot = ParkingSpot.query.get(booking.spot_id)
+        spot.status = "A"
+        db.session.delete(booking)
+        db.session.commit()
+        return redirect(url_for('admin_dashboard'))
+
+    @app.route("/view_spots/<int:lot_id>")
+    def view_spots(lot_id):
+        lot = ParkingLot.query.get_or_404(lot_id)
+        spots = ParkingSpot.query.filter_by(lot_id=lot.id).all()
+        return render_template("view_spots.html", lot=lot, spots=spots)
+
+    @app.route("/view_users")
+    def view_users():
+        users = User_Info.query.filter_by(role=1).all()
+        return render_template("admin_view_users.html", users=users)
+
+    @app.route('/summary')
+    def admin_summary():
+        lots = ParkingLot.query.all()
+        lot_names = []
+        revenues = []
+
+        for lot in lots:
+        # Get spot IDs for this lot
+            spot_ids = [s.id for s in ParkingSpot.query.filter_by(lot_id=lot.id).all()]
+        
+            if spot_ids:
+                lot_revenue = sum(r.cost for r in Reservation.query.filter(Reservation.spot_id.in_(spot_ids)).all())
+            else:
+                lot_revenue = 0
+        
+            lot_names.append(lot.name)
+            revenues.append(lot_revenue)
+
+        total_spots = ParkingSpot.query.count()
+        occupied_count = ParkingSpot.query.filter_by(status='O').count()
+        available_count = total_spots - occupied_count
+
+        return render_template(
+            'admin_summary.html',
+            lot_names=lot_names,
+            revenues=revenues,
+            occupied_count=occupied_count,
+            available_count=available_count
+        )
+
+    @app.route("/search", methods=["GET"])
+    def admin_search():
+        query = request.args.get("q", "")
+
+        users = User_Info.query.filter(User_Info.id.like(f"%{query}%")).all()
+        lots_by_name = ParkingLot.query.filter(ParkingLot.name.like(f"%{query}%")).all()
+        lots_by_location = ParkingLot.query.filter(ParkingLot.location.like(f"%{query}%")).all()
+        spots = ParkingSpot.query.filter(ParkingSpot.id.like(f"%{query}%")).all()
+
+        results = {
+            "users": users,
+            "lots_by_name": lots_by_name,
+            "lots_by_location": lots_by_location,
+            "spots": spots
+        }
+
+        return render_template("admin_search.html", query=query, results=results)
+
+    @app.route("/get_suggestions")
+    def get_suggestions():
+        query = request.args.get("q", "")
+
+        suggestions = []
+
+        # Fetch IDs and names for suggestions
+        user_ids = [str(u.id) for u in User_Info.query.filter(User_Info.id.like(f"%{query}%")).all()]
+        lot_names = [l.name for l in ParkingLot.query.filter(ParkingLot.name.like(f"%{query}%")).all()]
+        lot_locations = [l.location for l in ParkingLot.query.filter(ParkingLot.location.like(f"%{query}%")).all()]
+        spot_ids = [str(s.id) for s in ParkingSpot.query.filter(ParkingSpot.id.like(f"%{query}%")).all()]
+
+        suggestions.extend(user_ids)
+        suggestions.extend(lot_names)
+        suggestions.extend(lot_locations)
+        suggestions.extend(spot_ids)
+
+        return {"suggestions": suggestions}
+

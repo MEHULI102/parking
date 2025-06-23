@@ -7,33 +7,116 @@
 </head>
 <body class="p-4">
 
-  <h2>Parking Spots for <span class="text-primary">{{ lot.name }}</span></h2>
-  <h5>Location: {{ lot.location }}</h5>
+<h2>Parking Spots for <span class="text-primary">{{ lot.name }}</span></h2>
+<h5>Location: {{ lot.location }}</h5>
 
-  <table class="table table-striped mt-4">
-    <thead>
-      <tr>
-        <th>Spot ID</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for spot in spots %}
-      <tr>
-        <td>{{ spot.id }}</td>
-        <td>
-          {% if spot.status == 'A' %}
-            <span class="badge bg-success">Available</span>
-          {% else %}
-            <span class="badge bg-danger">Occupied</span>
-          {% endif %}
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<table class="table table-striped mt-4">
+  <thead>
+    <tr>
+      <th>Spot ID</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for spot in spots %}
+    <tr>
+      <td>{{ spot.id }}</td>
+      <td>
+        {% if spot.status == 'A' %}
+          <span class="badge bg-success">Available</span>
+        {% else %}
+          <span class="badge bg-danger">Occupied</span>
+        {% endif %}
+      </td>
+      <td>
+        <button class="btn btn-sm btn-primary" onclick="openCard({{ spot.id }}, '{{ spot.status }}')">Manage</button>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 
-  <a href="/admin_dashboard" class="btn btn-primary">Back to Dashboard</a>
+<a href="/admin_dashboard" class="btn btn-primary">Back to Dashboard</a>
+
+<!-- Spot Manage Card -->
+<div id="spot-detail-card" class="card shadow p-3 mb-5 bg-white rounded"
+     style="display: none; position:fixed; top:20%; left:50%; transform:translate(-50%, -20%); z-index:9999; width: 400px;">
+  <h4 class="text-center mb-3">🔧 Manage Parking Spot</h4>
+
+  <div class="mb-2">
+    <strong>Spot ID:</strong> <span id="spot-id-display"></span>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label d-block">Status</label>
+    <div class="btn-group w-100">
+      <button id="btn-available" class="btn btn-outline-success" onclick="setStatus('A')">Available</button>
+      <button id="btn-occupied" class="btn btn-outline-danger" onclick="goToSpotDetail()">Occupied</button>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <strong>🕒 Last Updated:</strong> <span id="last-updated-display"></span>
+  </div>
+
+  <div class="d-flex justify-content-between">
+    <button class="btn btn-danger" onclick="deleteSpot()">🗑️ Delete</button>
+    <button class="btn btn-secondary" onclick="closeCard()">❌ Close</button>
+  </div>
+</div>
+
+<script>
+  let currentStatus = '';
+  let currentSpotId = null;
+
+  function openCard(spotId, status) {
+    currentSpotId = spotId;
+    document.getElementById("spot-id-display").innerText = spotId;
+    setStatus(status);
+    let now = new Date();
+    document.getElementById("last-updated-display").innerText = now.toLocaleString();
+    document.getElementById("spot-detail-card").style.display = "block";
+  }
+
+  function closeCard() {
+    document.getElementById("spot-detail-card").style.display = "none";
+  }
+
+  function deleteSpot() {
+    alert("Spot deleted successfully!");
+    closeCard();
+  }
+
+  function setStatus(status) {
+    currentStatus = status;
+    const btnAvailable = document.getElementById("btn-available");
+    const btnOccupied  = document.getElementById("btn-occupied");
+
+    btnAvailable.classList.remove("btn-success");
+    btnAvailable.classList.add("btn-outline-success");
+
+    btnOccupied.classList.remove("btn-danger");
+    btnOccupied.classList.add("btn-outline-danger");
+
+    if (status === 'A') {
+      btnAvailable.classList.remove("btn-outline-success");
+      btnAvailable.classList.add("btn-success");
+    } else if (status === 'O') {
+      btnOccupied.classList.remove("btn-outline-danger");
+      btnOccupied.classList.add("btn-danger");
+    }
+
+    let now = new Date();
+    document.getElementById("last-updated-display").innerText = now.toLocaleString();
+  }
+
+  function goToSpotDetail() {
+    if (currentSpotId !== null) {
+      window.location.href = `/spot/${currentSpotId}`;
+    }
+  }
+</script>
 
 </body>
 </html>

@@ -10,270 +10,253 @@ body.login-page {
   background-color: #ffe6f0;
   font-family: sans-serif;
 }
-
-.login-page #container {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.login-page #panel {
-  width: 400px;
-  padding: 30px;
-  border-radius: 15px;
-  background-color: #fff0f5;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-}
-
-.login-page #input-form {
-  width: 100%;
-}
-
-.login-page h2 {
-  color: #c2185b;
-}
+.login-page #container { height: 100vh; display: flex; justify-content: center; align-items: center; }
+.login-page #panel { width: 400px; padding: 30px; border-radius: 15px; background-color: #fff0f5; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
+.login-page #input-form { width: 100%; }
+.login-page h2 { color: #c2185b; }
 
 /* User Dashboard Styling */
-body.dashboard-page {
-  background-color: #61948c !important;
-  font-family: sans-serif;
-}
-
-.dashboard-page #panel {
-  padding: 20px;
-  width: 100%;
-  margin: 0;
-  min-height: 100vh;
-  border-radius: 0;
-  background: white;
-}
-
-.dashboard-page #input-form {
-  padding: 20px;
-  min-height: auto;
-}
-
-.dashboard-page .card {
-  width: 100%;
-  max-width: 350px;
-  margin: 0 auto 20px auto;
-}
-
-.dashboard-page table {
-  width: 100%;
-  table-layout: auto;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
-
-.dashboard-page th, .dashboard-page td {
-  white-space: normal;
-}
+body.dashboard-page { background-color: #61948c !important; font-family: sans-serif; }
+.dashboard-page #panel { padding: 20px; width:100%; margin:0; min-height:100vh; border-radius:0; background:white; }
+.dashboard-page #input-form { padding:20px; }
+.dashboard-page .card { width:100%; max-width:350px; margin:0 auto 20px auto; }
+.dashboard-page table { width:100%; }
+.dashboard-page th, .dashboard-page td { white-space:normal; }
 
 /* Register Page Styling */
-body.register-page {
-  background-color: #e6f2ff; /* light blue background */
-  font-family: sans-serif;
-}
-
-.register-page #container {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.register-page #panel {
-  width: 400px;
-  padding: 30px;
-  border-radius: 15px;
-  background-color: #f0f8ff; /* blue-tinted white */
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-}
-
-.register-page #input-form {
-  width: 100%;
-}
-
-.register-page h2 {
-  color: #1976d2; /* strong blue */
-}
+body.register-page { background-color:#9aebba; font-family:sans-serif; }
+.register-page #container { height:100vh; display:flex; justify-content:center; align-items:center; }
+.register-page #panel { width:400px; padding:30px; border-radius:15px; background-color:#f0f8ff; box-shadow:0 0 20px rgba(0,0,0,0.2); }
+.register-page #input-form { width:100%; }
+.register-page h2 { color:#34c18f; }
 
 /* Add Lot Page Styles */
-body.add-lot-page {
-  background: #eef9ee; /* very light green */
-  font-family: 'Segoe UI', sans-serif;
-}
-
-.add-lot-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 3rem 1rem;
-}
-
-.add-lot-card {
-  background: #d4edda; /* pale green */
-  border-left: 5px solid #28a745; /* green accent */
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
-  max-width: 480px;
-  width: 100%;
-}
-
-.add-lot-title {
-  font-size: 1.75rem;
-  font-weight: bold;
-  color: #155724; /* dark green */
-  margin-bottom: 1.5rem;
-  text-align: center;
-  font-family: 'Brush Script MT', cursive;
-}
-
-.add-lot-form .form-group {
-  margin-bottom: 1rem;
-}
-
-.add-lot-form .form-label {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #155724;
-  margin-bottom: 0.3rem;
-}
-
-.add-lot-form .form-control {
-  border: 2px solid #28a745;
-  border-radius: 0.5rem;
-  padding: 0.6rem;
-}
-
-.add-lot-form .form-control:focus {
-  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
-}
-
-.form-actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 1.5rem;
-}
-
-.form-actions .btn {
-  min-width: 120px;
-  font-weight: 600;
-}
+body.add-lot-page { background:#eef9ee; font-family:'Segoe UI',sans-serif; }
+.add-lot-container { display:flex; justify-content:center; align-items:center; padding:3rem 1rem; }
+.add-lot-card { background:#d4edda; border-left:5px solid #28a745; border-radius:0.75rem; box-shadow:0 4px 12px rgba(0,0,0,0.1); padding:2rem; max-width:480px; width:100%; }
+.add-lot-title { font-size:1.75rem; font-weight:bold; color:#155724; margin-bottom:1.5rem; text-align:center; font-family:'Brush Script MT',cursive; }
+.add-lot-form .form-group { margin-bottom:1rem; }
+.add-lot-form .form-label { font-size:1.1rem; font-weight:600; color:#155724; margin-bottom:0.3rem; }
+.add-lot-form .form-control { border:2px solid #28a745; border-radius:0.5rem; padding:0.6rem; }
+.add-lot-form .form-control:focus { box-shadow:0 0 0 0.2rem rgba(40,167,69,0.25); }
+.form-actions { display:flex; justify-content:space-between; margin-top:1.5rem; }
+.form-actions .btn { min-width:120px; font-weight:600; }
 
 /* Admin Bookings Page Styles */
-body.admin-bookings-page {
-  background: #faf5ff;  /* very light lavender */
-  font-family: 'Segoe UI', sans-serif;
+body.admin-bookings-page { background:#faf5ff; font-family:'Segoe UI',sans-serif; }
+.bookings-container { display:flex; justify-content:center; padding:3rem 1rem; }
+.bookings-card { background:#f2ebfb; border-left:5px solid #6f42c1; border-radius:0.75rem; box-shadow:0 4px 12px rgba(0,0,0,0.08); padding:2rem; max-width:900px; width:100%; }
+.bookings-title { font-size:1.75rem; font-weight:bold; color:#4e2a84; margin-bottom:1rem; font-family:'Brush Script MT',cursive; text-align:center; }
+.back-btn { display:inline-block; margin-bottom:1.5rem; color:#4e2a84; background:#fff; border:1px solid #6f42c1; border-radius:0.5rem; padding:0.5rem 1rem; text-decoration:none; }
+.back-btn:hover { background:#f8f0ff; }
+.table-responsive { overflow-x:auto; }
+.bookings-table { width:100%; border-collapse:separate; border-spacing:0; }
+.bookings-table th { background:#e6dbf7; color:#4e2a84; font-weight:600; border-bottom:2px solid #6f42c1; text-align:center; }
+.bookings-table td { padding:0.75rem; vertical-align:middle; text-align:center; border-top:1px solid #ddd; }
+.bookings-table tr:nth-child(even) { background:#f9f5fe; }
+.bookings-table tr:hover { background:#f1e8fd; }
+
+/* ——————————————————————————————————————————
+   Admin Dashboard Overrides
+   (applies to <body class="admin-dashboard-page">)
+—————————————————————————————————————————— */
+
+/* outer background */
+.admin-dashboard-page {
+  background: #f0f0f0;
 }
 
-.bookings-container {
-  display: flex;
-  justify-content: center;
-  padding: 3rem 1rem;
-}
-
-.bookings-card {
-  background: #f2ebfb;               /* pale lavender */
-  border-left: 5px solid #6f42c1;    /* purple accent */
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+/* panel container */
+.admin-dashboard-page #panel {
+  background: #fff;
   padding: 2rem;
-  max-width: 900px;
-  width: 100%;
+  max-width: 1400px;
+  margin: 2rem auto;
+  border: 3px solid #1976d2;
+  border-radius: 1rem;
 }
 
-.bookings-title {
-  font-size: 1.75rem;
-  font-weight: bold;
-  color: #4e2a84;                    /* dark purple */
-  margin-bottom: 1rem;
+/* title */
+.admin-dashboard-page .admin-dashboard-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #1976d2;
+  text-align: center;
+  margin-bottom: 2rem;
   font-family: 'Brush Script MT', cursive;
-  text-align: center;
 }
 
-.back-btn {
-  display: inline-block;
-  margin-bottom: 1.5rem;
-  color: #4e2a84;
-  background: #ffffff;
-  border: 1px solid #6f42c1;
+/* wrapper around cards */
+.admin-dashboard-page .lots-container {
+  border: 2px dashed #1976d2;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
   border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  text-decoration: none;
+  background: #f7f9fc;
 }
 
-.back-btn:hover {
-  background: #f8f0ff;
+/* individual lot cards */
+.admin-dashboard-page .lot-card {
+  background: #e3f2fd;
+  border: 2px solid #82b1ff;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease;
+}
+.admin-dashboard-page .lot-card:hover {
+  transform: translateY(-4px);
 }
 
-.table-responsive {
-  overflow-x: auto;
-}
-
-.bookings-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-.bookings-table th {
-  background: #e6dbf7;               /* very light purple header */
-  color: #4e2a84;
+/* card title */
+.admin-dashboard-page .lot-card .card-title {
+  color: #0d47a1;
   font-weight: 600;
-  border-bottom: 2px solid #6f42c1;
-  text-align: center;
+  margin-bottom: 0.5rem;
 }
 
-.bookings-table td {
-  padding: 0.75rem;
-  vertical-align: middle;
-  text-align: center;
-  border-top: 1px solid #ddd;
+/* card text */
+.admin-dashboard-page .lot-card p {
+  font-size: 0.95rem;
+  margin-bottom: 0.4rem;
 }
 
-.bookings-table tr:nth-child(even) {
-  background: #f9f5fe;               /* alternating pale rows */
-}
-
-.bookings-table tr:hover {
-  background: #f1e8fd;               /* highlight on hover */
-}
-
-
-
-
-
-
-/* Admin Dashboard spot grid */
-.spot-grid {
+/* spot-grid inside card */
+.admin-dashboard-page .spot-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 0.3rem;
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
 }
-.spot-grid .btn {
-  width: 100%;
+.admin-dashboard-page .spot-grid .btn {
+  font-size: 0.8rem;
   padding: 0.4rem 0;
-  font-size: 0.9rem;
-  text-align: center;
-}
-
-/* Fixed “Add” button */
-.add-btn {
-  position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
   border-radius: 0.25rem;
-  padding: 0.75rem 1.25rem;
-  font-size: 1.1rem;
-  z-index: 1000;
 }
 
-/* Ensure admin page font */
-.admin-dashboard-page {
-  font-family: sans-serif;
+/* “Add Parking Lot” button */
+.admin-dashboard-page .add-lot-btn {
+  background: #1976d2 !important;
+  border-color: #1976d2 !important;
+  color: #fff !important;
+}
+.admin-dashboard-page .add-lot-btn:hover {
+  background: #1565c0 !important;
+  border-color: #1565c0 !important;
+}
+
+/* modal overrides */
+.admin-dashboard-page #spot-detail-card {
+  border: 3px solid #222;
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+/* modal buttons */
+.admin-dashboard-page #spot-detail-card .btn-outline-success,
+.admin-dashboard-page #spot-detail-card .btn-available {
+  background-color: #4caf50 !important;
+  color: #fff !important;
+}
+.admin-dashboard-page #spot-detail-card .btn-outline-danger,
+.admin-dashboard-page #spot-detail-card .btn-occupied {
+  background-color: #f44336 !important;
+  color: #fff !important;
+}
+
+/* Beautiful Edit/Delete icon buttons inside lot card */
+.admin-dashboard-page .lot-card-actions {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+}
+
+.admin-dashboard-page .action-btn {
+  font-size: 1.1rem;
+  margin-left: 0.5rem;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.admin-dashboard-page .action-btn:hover {
+  transform: scale(1.3);
+}
+
+.admin-dashboard-page .edit-btn {
+  color: #4caf50;
+}
+
+.admin-dashboard-page .delete-btn {
+  color: #f44336;
+}
+
+/* Beautified Add Lot button */
+.admin-dashboard-page .add-lot-btn {
+  background: linear-gradient(135deg, #42a5f5, #1e88e5) !important;
+  border: none !important;
+  color: #fff !important;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.25s ease;
+}
+
+.admin-dashboard-page .add-lot-btn:hover {
+  background: linear-gradient(135deg, #1e88e5, #1976d2) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transform: translateY(-2px);
+}
+
+/* Admin Dashboard Navbar Styling */
+.admin-navbar {
+  background: #1976d2;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 0.75rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.admin-navbar .left, 
+.admin-navbar .center, 
+.admin-navbar .right {
+  display: flex;
+  align-items: center;
+}
+
+.admin-navbar .center {
+  gap: 1rem;
+}
+
+.admin-navbar a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.3rem 0.75rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.admin-navbar a:hover {
+  background: rgba(255, 255, 255, 0.2);
+  text-decoration: none;
+}
+
+/* Optional: highlight 'Logout' button */
+.admin-navbar a:last-child {
+  background: #e53935;
+  padding: 0.4rem 0.8rem;
+}
+
+.admin-navbar a:last-child:hover {
+  background: #d32f2f;
 }
