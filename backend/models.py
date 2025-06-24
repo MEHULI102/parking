@@ -61,3 +61,9 @@ class Card(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('user_info.id'), nullable=True)
     lot_id = db.Column(db.Integer, db.ForeignKey('parking_lot.id'), nullable=True)
+
+class Admin(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    full_name = db.Column(db.String(100))
+    email = db.Column(db.String(120), unique=True)
+    password = db.Column(db.String(100))

@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, flash, session
 from backend.models import db, User_Info, ParkingLot, ParkingSpot, Reservation
 from datetime import datetime
 
@@ -19,6 +19,7 @@ def init_app(app):
             usr = User_Info.query.filter_by(user_name=uname, email=email, pwd=pwd).first()
 
             if usr and usr.role == 0:
+                session['admin_id'] = usr.id  # ✅ Save admin id to session
                 return redirect(url_for('admin_dashboard'))
             elif usr and usr.role == 1:
                 return render_template("user_dashboard.html")
@@ -26,6 +27,7 @@ def init_app(app):
                 msg = "Invalid credentials!!"
 
         return render_template("login.html", msg=msg)
+
 
     @app.route("/register", methods=["GET", "POST"])
     def user_register():
@@ -240,4 +242,28 @@ def init_app(app):
         suggestions.extend(spot_ids)
 
         return {"suggestions": suggestions}
+
+    @app.route('/edit_profile', methods=['GET', 'POST'])
+    def edit_profile():
+        if 'admin_id' not in session:
+            return redirect('/login')
+
+        admin = User_Info.query.get(session['admin_id'])  
+
+        if request.method == 'POST':
+            full_name = request.form['full_name']
+            email = request.form['email']
+            password = request.form['password']
+
+            admin.full_name = full_name
+            admin.email = email
+
+            if password:
+                admin.pwd = password  
+
+            db.session.commit()
+            flash('Profile updated successfully!', 'success')
+            return redirect(url_for('user_login'))
+
+        return render_template('admin_edit_profile.html', admin=admin)
 
