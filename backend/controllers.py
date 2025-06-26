@@ -3,6 +3,20 @@ from backend.models import db, User_Info, ParkingLot, ParkingSpot, Reservation
 from datetime import datetime
 
 def init_app(app):
+    # ✅ Default admin creation block
+    with app.app_context():
+        admin = User_Info.query.filter_by(role=0).first()
+        if not admin:
+            default_admin = User_Info(
+                full_name="Admin",
+                user_name="admin",
+                email="admin@parking.com",
+                pwd="admin123",
+                role=0
+            )
+            db.session.add(default_admin)
+            db.session.commit()
+            
 
     @app.route("/")
     def home():
@@ -12,17 +26,17 @@ def init_app(app):
     def user_login():
         msg = ""
         if request.method == "POST":
-            uname = request.form.get("uname")
+          
             email = request.form.get("email")
             pwd = request.form.get("pwd")
 
-            usr = User_Info.query.filter_by(user_name=uname, email=email, pwd=pwd).first()
+            usr = User_Info.query.filter_by( email=email, pwd=pwd).first()
 
             if usr and usr.role == 0:
-                session['admin_id'] = usr.id  # ✅ Save admin id to session
+                session['admin_id'] = usr.id
                 return redirect(url_for('admin_dashboard'))
             elif usr and usr.role == 1:
-                session['user_id'] = usr.id  # ✅ Add this line
+                session['user_id'] = usr.id
                 reservations = Reservation.query.filter_by(user_id=usr.id).all()
                 total_bookings = len(reservations)
                 active_bookings = sum(1 for r in reservations if r.spot.status == 'O')
@@ -35,7 +49,6 @@ def init_app(app):
                     results=[],
                     query=""
                 )
-
             else:
                 msg = "Invalid credentials!!"
 
