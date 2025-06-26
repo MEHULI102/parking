@@ -10,6 +10,9 @@ class User_Info(db.Model):
     user_name = db.Column(db.String(100), unique=True)
     email = db.Column(db.String(120), unique=True)
     pwd = db.Column(db.String(100))
+    phone = db.Column(db.String(20))
+    address = db.Column(db.String(200))
+    pincode = db.Column(db.String(10))
     role = db.Column(db.Integer, default=1)  # 0=admin, 1=user
 
     reservations = db.relationship('Reservation', backref='user', lazy=True)
@@ -18,11 +21,13 @@ class User_Info(db.Model):
 class ParkingLot(db.Model):
     __tablename__ = "parking_lot"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    location = db.Column(db.String(100))
-    price_per_hour = db.Column(db.Float, nullable=False)   
-    total_spots = db.Column(db.Integer, nullable=False)    
-
+    prime_location_name = db.Column(db.String(100), nullable=False)
+    address = db.Column(db.String(200))
+    pincode = db.Column(db.String(10))
+    price_per_hour = db.Column(db.Float, nullable=False)
+    total_spots = db.Column(db.Integer, nullable=False)
+    created_date = db.Column(db.DateTime, default=datetime.utcnow)
+    location = db.Column(db.String(255)) 
 
 
 class ParkingSpot(db.Model):
@@ -43,27 +48,3 @@ class Reservation(db.Model):
     leaving_timestamp = db.Column(db.DateTime, nullable=True)
     cost = db.Column(db.Float)
 
-
-# Optional: Extra Card model if you're using it elsewhere
-class Card(db.Model):
-    __tablename__ = "cards"
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    content = db.Column(db.Text, nullable=False)
-    created_dt = db.Column(db.DateTime, default=datetime.utcnow)
-    last_updated_dt = db.Column(db.DateTime, onupdate=datetime.utcnow)
-    deadline = db.Column(db.DateTime, nullable=True)
-    status = db.Column(db.String(20), default="active")
-    color = db.Column(db.String(20), default="primary")
-    icon = db.Column(db.String(100))
-    priority = db.Column(db.Integer)
-    link_url = db.Column(db.String(255))
-
-    user_id = db.Column(db.Integer, db.ForeignKey('user_info.id'), nullable=True)
-    lot_id = db.Column(db.Integer, db.ForeignKey('parking_lot.id'), nullable=True)
-
-class Admin(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    full_name = db.Column(db.String(100))
-    email = db.Column(db.String(120), unique=True)
-    password = db.Column(db.String(100))

@@ -22,7 +22,20 @@ def init_app(app):
                 session['admin_id'] = usr.id  # ✅ Save admin id to session
                 return redirect(url_for('admin_dashboard'))
             elif usr and usr.role == 1:
-                return render_template("user_dashboard.html")
+                session['user_id'] = usr.id  # ✅ Add this line
+                reservations = Reservation.query.filter_by(user_id=usr.id).all()
+                total_bookings = len(reservations)
+                active_bookings = sum(1 for r in reservations if r.spot.status == 'O')
+                return render_template(
+                    "user_dashboard.html",
+                    user=usr,
+                    reservations=reservations,
+                    total_bookings=total_bookings,
+                    active_bookings=active_bookings,
+                    results=[],
+                    query=""
+                )
+
             else:
                 msg = "Invalid credentials!!"
 
@@ -248,22 +261,173 @@ def init_app(app):
         if 'admin_id' not in session:
             return redirect('/login')
 
-        admin = User_Info.query.get(session['admin_id'])  
+        admin = User_Info.query.get(session['admin_id'])
 
         if request.method == 'POST':
-            full_name = request.form['full_name']
-            email = request.form['email']
+            admin.full_name = request.form['full_name']
+            admin.email = request.form['email']
+            admin.phone = request.form['phone']
+            admin.location = request.form['location']
+            admin.address = request.form['address']
+            admin.pin_code = request.form['pin_code']
+
             password = request.form['password']
-
-            admin.full_name = full_name
-            admin.email = email
-
             if password:
-                admin.pwd = password  
+                admin.pwd = password
+
+            db.session.commit()
+            flash('Admin profile updated successfully!', 'success')
+            return redirect(url_for('admin_dashboard'))
+
+        return render_template('admin_edit_profile.html', admin=admin)
+
+
+    @app.route('/user_summary')
+    def user_summary():
+        if 'user_id' not in session:
+            return redirect('/login')
+
+        user = User_Info.query.get(session['user_id'])
+
+        results = db.session.query(
+            ParkingLot.location,
+            db.func.count(Reservation.id)
+        ).select_from(ParkingLot)\
+        .join(ParkingSpot, ParkingSpot.lot_id == ParkingLot.id)\
+        .join(Reservation, Reservation.spot_id == ParkingSpot.id)\
+        .group_by(ParkingLot.location).all()
+
+        labels = [r[0] for r in results]
+        data = [r[1] for r in results]
+
+        return render_template('user_summary.html', user=user, labels=labels, data=data)
+    @app.route("/user_dashboard")
+    def user_dashboard():
+        if 'user_id' not in session:
+            return redirect('/login')
+
+        user = User_Info.query.get(session['user_id'])
+        reservations = Reservation.query.filter_by(user_id=user.id).all()
+        total_bookings = len(reservations)
+        active_bookings = sum(1 for r in reservations if r.spot.status == 'O')
+
+        return render_template(
+            "user_dashboard.html",
+            user=user,
+            reservations=reservations,
+            total_bookings=total_bookings,
+            active_bookings=active_bookings,
+            results=[],
+            query=""
+        )
+
+    @app.route('/user_edit_profile', methods=['GET', 'POST'])
+    def user_edit_profile():
+        if 'user_id' not in session:
+            return redirect('/login')
+
+        user = User_Info.query.get(session['user_id'])
+
+        if request.method == 'POST':
+            user.full_name = request.form['full_name']
+            user.email = request.form['email']
+            user.phone = request.form['phone']
+            user.location = request.form['location']
+            user.address = request.form['address']
+            user.pin_code = request.form['pin_code']
+
+            password = request.form['password']
+            if password:
+                user.pwd = password
 
             db.session.commit()
             flash('Profile updated successfully!', 'success')
-            return redirect(url_for('user_login'))
+            return redirect(url_for('user_dashboard'))
 
-        return render_template('admin_edit_profile.html', admin=admin)
+        return render_template('user_edit_profile.html', user=user)
+
+
+    @app.route('/release/<int:res_id>')
+    def release_parking(res_id):
+        reservation = Reservation.query.get_or_404(res_id)
+        spot = ParkingSpot.query.get(reservation.spot_id)
+
+        if spot.status == 'O':
+            spot.status = 'A'
+            db.session.commit()
+            flash(f'Reservation ID {res_id} has been released!', 'success')
+        else:
+            flash(f'Reservation ID {res_id} was already free.', 'info')
+
+        return redirect(url_for('user_dashboard'))
+
+
+    @app.route('/parkedout/<int:res_id>')
+    def parked_out(res_id):
+        reservation = Reservation.query.get_or_404(res_id)
+        spot = ParkingSpot.query.get(reservation.spot_id)
+
+        if spot.status == 'O':
+            spot.status = 'A'
+            db.session.commit()
+            flash(f'Vehicle for Reservation ID {res_id} marked as parked out.', 'success')
+        else:
+            flash(f'Vehicle for Reservation ID {res_id} was already parked out.', 'info')
+
+        return redirect(url_for('user_dashboard'))
+
+    @app.route("/user_search")
+    def user_search():
+        if 'user_id' not in session:
+            return redirect('/login')
+
+        query = request.args.get("q", "")
+        user = User_Info.query.get(session['user_id'])
+
+        results = ParkingLot.query.filter(ParkingLot.location.like(f"%{query}%")) 
+            # (ParkingLot.name.like(f"%{query}%"))
+        
+
+        reservations = Reservation.query.filter_by(user_id=user.id).all()
+        total_bookings = len(reservations)
+        active_bookings = sum(1 for r in reservations if r.spot.status == 'O')
+
+        return render_template(
+            "user_dashboard.html",
+            user=user,
+            reservations=reservations,
+            total_bookings=total_bookings,
+            active_bookings=active_bookings,
+            results=results,
+            query=query
+        )
+
+    @app.route('/book/<int:lot_id>')
+    def book_spot(lot_id):
+        if 'user_id' not in session:
+            return redirect('/login')
+
+        lot = ParkingLot.query.get_or_404(lot_id)
+
+    # Find an available spot
+        available_spot = ParkingSpot.query.filter_by(lot_id=lot_id, status='A').first()
+
+        if not available_spot:
+            flash('No available spots in this lot.', 'danger')
+            return redirect(url_for('user_dashboard'))
+
+    # Reserve the spot
+        new_reservation = Reservation(
+            user_id=session['user_id'],
+            spot_id=available_spot.id,
+            vehicle_no='WB00X0000',  # You can later modify to collect from user
+            parking_timestamp=datetime.now(),
+            cost=lot.price_per_hour  # or calculate cost later on release
+        )
+        available_spot.status = 'O'
+        db.session.add(new_reservation)
+        db.session.commit()
+
+        flash(f'Spot {available_spot.id} at {lot.location} booked successfully!', 'success')
+        return redirect(url_for('user_dashboard'))
 
