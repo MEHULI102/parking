@@ -2,100 +2,82 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin | Edit Profile</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <style>
-    body {
-      background: linear-gradient(to right, #f8f9fa, #e9ecef);
-      font-family: 'Segoe UI', sans-serif;
-    }
-
-    .profile-card {
-      background-color: #fff;
-      border-radius: 20px;
-      padding: 40px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    }
-
-    .profile-header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .profile-header h3 {
-      font-weight: bold;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    .form-label {
-      font-weight: 600;
-    }
-
-    .btn-primary {
-      border-radius: 30px;
-      padding: 10px 25px;
-    }
-
-    .btn-secondary {
-      border-radius: 30px;
-      padding: 10px 25px;
-      background-color: #6c757d;
-    }
-
-    .back-link {
-      display: inline-block;
-      margin-top: 20px;
-      text-decoration: none;
-      font-size: 14px;
-      color: #495057;
-    }
-
-    .back-link:hover {
-      text-decoration: underline;
-    }
-  </style>
+  <title>Edit Admin Profile</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
 <body>
 
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-6 col-md-8">
-      <div class="profile-card">
+<div class="main-container">
 
-        <div class="profile-header">
-          <h3>👤 Update Your Profile</h3>
-          <p class="text-muted">Manage your account details</p>
-        </div>
-
-        <form method="POST" action="{{ url_for('edit_profile') }}">
-          <div class="mb-3">
-            <label for="full_name" class="form-label">Full Name</label>
-            <input type="text" class="form-control" id="full_name" name="full_name" value="{{ admin.full_name }}" required>
-          </div>
-
-          <div class="mb-3">
-            <label for="email" class="form-label">Email Address</label>
-            <input type="email" class="form-control" id="email" name="email" value="{{ admin.email }}" required>
-          </div>
-
-          <div class="mb-3">
-            <label for="password" class="form-label">New Password</label>
-            <input type="password" class="form-control" id="password" name="password" placeholder="Leave blank to keep current password">
-          </div>
-
-          <div class="d-grid gap-2">
-            <button type="submit" class="btn btn-primary">💾 Save Changes</button>
-          </div>
-        </form>
-
-        <a href="{{ url_for('admin_dashboard') }}" class="back-link">⬅️ Back to Dashboard</a>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg dashboard-navbar">
+    <div class="container-fluid">
+      <span class="navbar-brand">Admin Panel</span>
+      <div class="nav-center d-flex">
+        <a href="/admin_dashboard" class="nav-link">Home</a>
+        <a href="/summary" class="nav-link">Summary</a>
+        <a href="/login" class="nav-link">Logout</a>
       </div>
     </div>
+  </nav>
+
+  <div class="container py-4">
+    <div class="dashboard-border">
+
+      <h5 class="section-title text-center mb-3">✏️ Edit Admin Profile</h5>
+
+      <div class="card glass-card">
+        <div class="card-body">
+          <form method="POST">
+            <div class="mb-3">
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-control" name="full_name" value="{{ admin.full_name }}" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" name="email" value="{{ admin.email }}" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Phone</label>
+              <input type="text" class="form-control" name="phone" value="{{ admin.phone }}">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Location</label>
+              <input type="text" class="form-control" name="location" value="{{ admin.location }}">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Address</label>
+              <input type="text" class="form-control" name="address" value="{{ admin.address }}">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Pin Code</label>
+              <input type="text" class="form-control" name="pin_code" value="{{ admin.pin_code }}">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">New Password (leave blank to keep old one)</label>
+              <input type="password" class="form-control" name="password">
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <button type="submit" class="btn btn-primary">Update Profile</button>
+              <a href="/admin_dashboard" class="btn btn-secondary">Cancel</a>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+    </div>
   </div>
+
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
