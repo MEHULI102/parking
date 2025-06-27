@@ -19,7 +19,8 @@
       <div class="nav-center d-flex">
         <a href="/user_dashboard" class="nav-link">Home</a>
         <a href="/user_summary" class="nav-link">Summary</a>
-        <a href="/login" class="nav-link">Logout</a>
+        <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+
       </div>
       <div>
         <a href="/user_edit_profile" class="btn btn-outline-light btn-sm">Edit Profile</a>
@@ -76,10 +77,10 @@
                 </td>
                 <td>
                   {% if res.spot.status == 'O' %}
-                  <a href="/release/{{ res.id }}" class="btn btn-sm btn-danger">❌ Release</a>
-                  <a href="/parkedout/{{ res.id }}" class="btn btn-sm btn-success">✅ Parked Out</a>
+                  <a href="/release/{{ res.id }}" class="btn btn-sm btn-danger"> Release</a>
+                  <!-- <a href="/parkedout/{{ res.id }}" class="btn btn-sm btn-success">✅ Parked Out</a> -->
                   {% else %}
-                  <button class="btn btn-secondary btn-sm" disabled>Done</button>
+                  <a href="/parkedout/{{ res.id }}" class="btn btn-sm btn-success"> Parked Out</a>
                   {% endif %}
                 </td>
               </tr>

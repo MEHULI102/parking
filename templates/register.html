@@ -6,7 +6,6 @@
   <title>User Signup</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Google Fonts for beautiful heading -->
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
   <style>
     .signup-title {
@@ -32,6 +31,16 @@
 
         <form action="/register" method="POST">
           <div class="mb-3">
+            <label for="uname" class="form-label">Username</label>
+            <input type="text" class="form-control" name="uname" id="uname" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="full_name" class="form-label">Full Name</label>
+            <input type="text" class="form-control" name="full_name" id="full_name" required>
+          </div>
+
+          <div class="mb-3">
             <label for="email" class="form-label">Email ID</label>
             <input type="email" class="form-control" name="email" id="email" required>
           </div>
@@ -39,11 +48,6 @@
           <div class="mb-3">
             <label for="pwd" class="form-label">Password</label>
             <input type="password" class="form-control" name="pwd" id="pwd" required>
-          </div>
-
-          <div class="mb-3">
-            <label for="name" class="form-label">Full Name</label>
-            <input type="text" class="form-control" name="name" id="name" required>
           </div>
 
           <div class="mb-3">

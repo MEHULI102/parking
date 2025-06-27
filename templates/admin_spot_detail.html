@@ -5,42 +5,94 @@
   <title>Spot Details</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    body {
+      background-color: #fdfcf8;
+    }
+    .detail-card {
+      border-radius: 15px;
+      background: #e7f6f2;
+      border: 1px solid #b2dfdb;
+    }
+    .detail-card h5 {
+      color: #00796b;
+    }
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-top: 20px;
+      color: #4e342e;
+    }
+    .badge-status {
+      font-size: 0.9rem;
+      padding: 0.4em 0.7em;
+    }
+    .status-available {
+      background-color: #81c784;
+    }
+    .status-occupied {
+      background-color: #ffb74d;
+    }
+    .btn-custom {
+      background-color: #ffca28;
+      border: none;
+      color: #212121;
+    }
+    .btn-custom:hover {
+      background-color: #ffc107;
+    }
+    .highlight {
+      font-weight: 600;
+      color: #37474f;
+    }
+    hr {
+      border-top: 1px solid #bdbdbd;
+    }
+  </style>
 </head>
-<body class="p-4 bg-light">
+<body class="p-4">
 
 <div class="container">
 
-  <div class="card p-4 shadow-sm">
-    <h4 class="mb-3">Parking Spot #{{ spot.id }}</h4>
+  <div class="card p-4 shadow-sm mb-4 detail-card">
+    <h4 class="mb-3" style="color:#00796b;">🚗 Parking Spot #{{ spot.id }}</h4>
 
     <form method="POST" action="#">
       <div class="mb-3">
-        <label class="form-label">Status</label>
+        <label class="form-label fw-bold">Status</label>
         <select class="form-select" disabled>
           <option {% if spot.status == 'A' %}selected{% endif %}>Available</option>
           <option {% if spot.status == 'O' %}selected{% endif %}>Occupied</option>
         </select>
       </div>
 
-      {% if reservation %}
-      <a href="{{ url_for('delete_booking', booking_id=reservation.id) }}" class="btn btn-danger mb-2">
-        Delete Booking
-      </a>
-      {% endif %}
-
-      <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Back</a>
+      <a href="{{ url_for('admin_dashboard') }}" class="btn btn-custom">← Back to Dashboard</a>
     </form>
   </div>
 
   {% if reservation %}
-  <div class="card p-4 shadow-sm mt-4 bg-warning-subtle">
-    <h5 class="mb-3">Occupied Spot Details</h5>
-    <p><strong>Reservation ID:</strong> {{ reservation.id }}</p>
-    <p><strong>Customer Email:</strong> {{ reservation.user_email }}</p>
-    <p><strong>Check-in Time:</strong> {{ reservation.in_time }}</p>
-    <p><strong>Parking Cost (₹):</strong> {{ reservation.cost }}</p>
-    <p><strong>Status:</strong> Active</p>
+  <div class="card p-4 shadow-sm detail-card">
+    <h5 class="mb-3">📝 Reservation Details</h5>
+    <p><span class="highlight">Reservation ID:</span> {{ reservation.id }}</p>
+    <p><span class="highlight">Check-in Time:</span> {{ reservation.in_time }}</p>
+    <p><span class="highlight">Parking Cost:</span> ₹{{ reservation.cost }}</p>
+    <p>
+      <span class="highlight">Status:</span>
+      <span class="badge badge-status status-occupied">Active</span>
+    </p>
+
+    {% if user %}
+    <div class="section-title">👤 Customer Information</div>
+    <hr>
+    <p><span class="highlight">Full Name:</span> {{ user.full_name }}</p>
+    <p><span class="highlight">Email:</span> {{ user.email }}</p>
+    <p><span class="highlight">Phone:</span> {{ user.phone or 'Not Provided' }}</p>
+    <p><span class="highlight">Address:</span> {{ user.address or 'Not Provided' }}</p>
+    <p><span class="highlight">Pincode:</span> {{ user.pincode or 'Not Provided' }}</p>
+    {% endif %}
   </div>
+  {% else %}
+  <div class="alert alert-info">No active reservation for this spot.</div>
   {% endif %}
 
 </div>

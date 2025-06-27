@@ -1,6 +1,7 @@
 from flask import render_template, request, redirect, url_for, flash, session
 from backend.models import db, User_Info, ParkingLot, ParkingSpot, Reservation
 from datetime import datetime
+from flask import jsonify
 
 def init_app(app):
     # ✅ Default admin creation block
@@ -60,29 +61,42 @@ def init_app(app):
         message = ""
 
         if request.method == "POST":
-            uname = request.form.get("uname")
-            email = request.form.get("email")
-            pwd = request.form.get("pwd")
-            cpwd = request.form.get("cpwd")
-            role = int(request.form.get("role"))
+            uname = request.form.get("uname").strip()
+            full_name = request.form.get("full_name").strip()
+            email = request.form.get("email").strip()
+            pwd = request.form.get("pwd").strip()
+            address = request.form.get("address").strip()
+            pincode = request.form.get("pincode").strip()
+            role = 1
 
-            if pwd != cpwd:
-                message = "Passwords do not match."
-            else:
-                existing_user = User_Info.query.filter(
-                    (User_Info.user_name == uname) | (User_Info.email == email)
-                ).first()
+        # Check for existing username
+            if User_Info.query.filter_by(user_name=uname).first():
+                message = "Username already exists. Please choose another."
+                return render_template("register.html", message=message)
 
-                if existing_user:
-                    message = "User with this username or email already exists."
-                else:
-                    new_user = User_Info(full_name=uname, user_name=uname, email=email, pwd=pwd, role=role)
-                    db.session.add(new_user)
-                    db.session.commit()
-                    message = "You have been registered successfully."
-                    return render_template("login.html", msg=message)
+        # Check for existing email
+            if User_Info.query.filter_by(email=email).first():
+                message = "Email already registered. Try logging in or use another."
+                return render_template("register.html", message=message)
+
+        # No conflicts — safe to register
+            new_user = User_Info(
+                full_name=full_name,
+                user_name=uname,
+                email=email,
+                pwd=pwd,
+                address=address,
+                pincode=pincode,
+                role=role
+            )
+            db.session.add(new_user)
+            db.session.commit()
+
+            message = "You have been registered successfully."
+            return render_template("login.html", msg=message)
 
         return render_template("register.html", message=message)
+
 
     @app.route("/admin_dashboard")
     def admin_dashboard():
@@ -117,12 +131,19 @@ def init_app(app):
     @app.route("/add_lot", methods=["GET", "POST"])
     def add_lot():
         if request.method == "POST":
+            prime_location_name = request.form.get("prime_location_name")  # 👈 add this line
             name = request.form.get("name")
             location = request.form.get("location")
             price = float(request.form.get("price"))
             total_spots = int(request.form.get("total_spots"))
 
-            new_lot = ParkingLot(name=name, location=location, price_per_hour=price, total_spots=total_spots)
+            new_lot = ParkingLot(
+                prime_location_name=prime_location_name,  # 👈 add this line too
+                name=name,
+                location=location,
+                price_per_hour=price,
+                total_spots=total_spots
+            )  
             db.session.add(new_lot)
             db.session.commit()
 
@@ -134,6 +155,7 @@ def init_app(app):
             return redirect(url_for('admin_dashboard'))
 
         return render_template("add_lot.html")
+
 
     @app.route("/edit_lot/<int:lot_id>", methods=["GET", "POST"])
     def edit_lot(lot_id):
@@ -178,9 +200,13 @@ def init_app(app):
             .filter_by(spot_id=spot.id) \
             .order_by(Reservation.id.desc()) \
             .first()
+        user = None
+        if reservation:
+            user = User_Info.query.get(reservation.user_id)
         return render_template("admin_spot_detail.html",
                                spot=spot,
-                               reservation=reservation)
+                               reservation=reservation,
+                               user=user)
     
     @app.route("/delete_booking/<int:booking_id>")
     def delete_booking(booking_id):
@@ -444,3 +470,28 @@ def init_app(app):
         flash(f'Spot {available_spot.id} at {lot.location} booked successfully!', 'success')
         return redirect(url_for('user_dashboard'))
 
+    @app.route('/api/spots')
+    def api_spots():
+        spots = ParkingSpot.query.all()
+        return jsonify([spot.to_dict() for spot in spots])
+
+    @app.route('/api/lots')
+    def api_lots():
+        lots = ParkingLot.query.all()
+        return jsonify([lot.to_dict() for lot in lots])
+
+    @app.route('/api/users')
+    def api_users():
+        users = User_Info.query.filter_by(role=1).all()
+        return jsonify([user.to_dict() for user in users])
+
+    @app.route('/api/reservations')
+    def api_reservations():
+        reservations = Reservation.query.all()
+        return jsonify([res.to_dict() for res in reservations])
+    
+    @app.route('/logout')
+    def logout():
+        session.clear()
+        flash('You have been logged out successfully.', 'success')
+        return redirect(url_for('user_login'))

@@ -22,7 +22,8 @@
         <li class="nav-item"><a class="nav-link" href="{{ url_for('view_users') }}">Users</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_summary') }}">Summary</a></li>
         <li class="nav-item"><a class="nav-link" href="#">Search</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Logout</a></li>
+        <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+
       </ul>
     </div>
 

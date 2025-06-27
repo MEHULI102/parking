@@ -24,7 +24,8 @@
         <li class="nav-item"><a class="nav-link" href="{{ url_for('view_users') }}">Users</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_summary') }}">Summary</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_search') }}">Search</a></li>
-        <li class="nav-item"><a class="nav-link" href="/login">Logout</a></li>
+        <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+
       </ul>
     </div>
 
@@ -32,13 +33,11 @@
       <a href="{{ url_for('edit_profile') }}" class="btn btn-light btn-sm">Edit Profile</a>
     </div>
 
-
   </div>
 </nav>
 
 <div id="panel" class="p-4">
   <h2 class="admin-dashboard-title">🅿️ Parking Lots</h2>
-
 
   <div class="lots-container">
     {% for lot in lots %}
@@ -100,7 +99,7 @@
   </div>
 
   <div class="d-flex justify-content-between">
-    <button class="btn btn-danger" onclick="deleteSpot()">🗑️ Delete</button>
+    <button id="delete-btn" class="btn btn-danger" onclick="deleteSpot()">🗑️ Delete</button>
     <button class="btn btn-secondary" onclick="closeCard()">❌ Close</button>
   </div>
 </div>
@@ -133,6 +132,7 @@
     currentStatus = status;
     const btnAvailable = document.getElementById("btn-available");
     const btnOccupied = document.getElementById("btn-occupied");
+    const deleteBtn = document.getElementById("delete-btn");
 
     btnAvailable.classList.remove("btn-success");
     btnAvailable.classList.add("btn-outline-success");
@@ -142,9 +142,11 @@
     if (status === 'A') {
       btnAvailable.classList.remove("btn-outline-success");
       btnAvailable.classList.add("btn-success");
+      deleteBtn.style.display = "inline-block";
     } else {
       btnOccupied.classList.remove("btn-outline-danger");
       btnOccupied.classList.add("btn-danger");
+      deleteBtn.style.display = "none";
     }
 
     let now = new Date();
