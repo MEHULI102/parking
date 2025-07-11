@@ -84,8 +84,20 @@
   }
 
   function deleteSpot() {
-    alert("Spot deleted successfully!");
-    closeCard();
+    if (confirm(`Are you sure you want to delete Spot ID ${currentSpotId}?`)) {
+      fetch(`/delete_spot/${currentSpotId}`)
+        .then(response => {
+          if (response.redirected) {
+            window.location.href = response.url;
+          } else {
+            alert("Failed to delete the spot.");
+          }
+        })
+        .catch(err => {
+          console.error("Error deleting spot:", err);
+          alert("Something went wrong.");
+        });
+    }
   }
 
   function setStatus(status) {

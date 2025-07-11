@@ -27,29 +27,19 @@ def init_app(app):
     def user_login():
         msg = ""
         if request.method == "POST":
-          
             email = request.form.get("email")
             pwd = request.form.get("pwd")
 
-            usr = User_Info.query.filter_by( email=email, pwd=pwd).first()
+            usr = User_Info.query.filter_by(email=email, pwd=pwd).first()
 
             if usr and usr.role == 0:
                 session['admin_id'] = usr.id
                 return redirect(url_for('admin_dashboard'))
+
             elif usr and usr.role == 1:
                 session['user_id'] = usr.id
-                reservations = Reservation.query.filter_by(user_id=usr.id).all()
-                total_bookings = len(reservations)
-                active_bookings = sum(1 for r in reservations if r.spot.status == 'O')
-                return render_template(
-                    "user_dashboard.html",
-                    user=usr,
-                    reservations=reservations,
-                    total_bookings=total_bookings,
-                    active_bookings=active_bookings,
-                    results=[],
-                    query=""
-                )
+                return redirect(url_for('user_dashboard'))  # ✅ FIXED: do not render directly
+
             else:
                 msg = "Invalid credentials!!"
 
@@ -340,6 +330,7 @@ def init_app(app):
         data = [r[1] for r in results]
 
         return render_template('user_summary.html', user=user, labels=labels, data=data)
+    
     @app.route("/user_dashboard")
     def user_dashboard():
         if 'user_id' not in session:
@@ -373,7 +364,7 @@ def init_app(app):
             user.phone = request.form['phone']
             user.location = request.form['location']
             user.address = request.form['address']
-            user.pin_code = request.form['pin_code']
+            user.pincode = request.form['pincode']
 
             password = request.form['password']
             if password:
@@ -386,19 +377,7 @@ def init_app(app):
         return render_template('user_edit_profile.html', user=user)
 
 
-    @app.route('/release/<int:res_id>')
-    def release_parking(res_id):
-        reservation = Reservation.query.get_or_404(res_id)
-        spot = ParkingSpot.query.get(reservation.spot_id)
 
-        if spot.status == 'O':
-            spot.status = 'A'
-            db.session.commit()
-            flash(f'Reservation ID {res_id} has been released!', 'success')
-        else:
-            flash(f'Reservation ID {res_id} was already free.', 'info')
-
-        return redirect(url_for('user_dashboard'))
 
 
     @app.route('/parkedout/<int:res_id>')
@@ -415,7 +394,7 @@ def init_app(app):
 
         return redirect(url_for('user_dashboard'))
 
-    @app.route("/user_search")
+    @app.route("/user_search", methods=["GET"])
     def user_search():
         if 'user_id' not in session:
             return redirect('/login')
@@ -423,9 +402,7 @@ def init_app(app):
         query = request.args.get("q", "")
         user = User_Info.query.get(session['user_id'])
 
-        results = ParkingLot.query.filter(ParkingLot.location.like(f"%{query}%")) 
-            # (ParkingLot.name.like(f"%{query}%"))
-        
+        results = ParkingLot.query.filter(ParkingLot.location.like(f"%{query}%")).all()
 
         reservations = Reservation.query.filter_by(user_id=user.id).all()
         total_bookings = len(reservations)
@@ -441,10 +418,16 @@ def init_app(app):
             query=query
         )
 
-    @app.route('/book/<int:lot_id>')
+
+    @app.route('/book/<int:lot_id>', methods=['POST'])
     def book_spot(lot_id):
         if 'user_id' not in session:
             return redirect('/login')
+
+        vehicle_no = request.form.get('vehicle_no')
+        if not vehicle_no:
+            flash('Vehicle number is required.', 'danger')
+            return redirect(url_for('user_dashboard'))
 
         lot = ParkingLot.query.get_or_404(lot_id)
 
@@ -459,7 +442,7 @@ def init_app(app):
         new_reservation = Reservation(
             user_id=session['user_id'],
             spot_id=available_spot.id,
-            vehicle_no='WB00X0000',  # You can later modify to collect from user
+            vehicle_no=vehicle_no,
             parking_timestamp=datetime.now(),
             cost=lot.price_per_hour  # or calculate cost later on release
         )
@@ -493,5 +476,37 @@ def init_app(app):
     @app.route('/logout')
     def logout():
         session.clear()
-        flash('You have been logged out successfully.', 'success')
+        
         return redirect(url_for('user_login'))
+    
+    @app.route('/delete_spot/<int:spot_id>')
+    def delete_spot(spot_id):
+        spot = ParkingSpot.query.get_or_404(spot_id)
+        if spot.status == 'A':  # Only delete if Available
+            db.session.delete(spot)
+            db.session.commit()
+            flash(f"Spot {spot_id} deleted.", 'success')
+        else:
+            flash(f"Cannot delete occupied spot.", 'danger')
+        return redirect(url_for('admin_dashboard'))
+    @app.route('/release/<int:res_id>')
+    def release_parking(res_id):
+        reservation = Reservation.query.get_or_404(res_id)
+        spot = ParkingSpot.query.get(reservation.spot_id)
+
+        if spot.status == 'O':
+            spot.status = 'A'
+
+        # ✅ Add checkout time and compute duration-based cost
+            end_time = datetime.now()
+            duration_hours = (end_time - reservation.parking_timestamp).total_seconds() / 3600
+            lot = ParkingLot.query.get(spot.lot_id)
+
+            reservation.cost = round(duration_hours * lot.price_per_hour, 2)
+            db.session.commit()
+
+            flash(f'Reservation ID {res_id} has been released! Cost: ₹{reservation.cost:.2f}', 'success')
+        else:
+            flash(f'Reservation ID {res_id} was already free.', 'info')
+
+        return redirect(url_for('user_dashboard'))
