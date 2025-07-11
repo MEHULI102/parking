@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import jsonify
 
 def init_app(app):
-    # ✅ Default admin creation block
+    
     with app.app_context():
         admin = User_Info.query.filter_by(role=0).first()
         if not admin:
@@ -38,7 +38,7 @@ def init_app(app):
 
             elif usr and usr.role == 1:
                 session['user_id'] = usr.id
-                return redirect(url_for('user_dashboard'))  # ✅ FIXED: do not render directly
+                return redirect(url_for('user_dashboard'))  
 
             else:
                 msg = "Invalid credentials!!"
@@ -94,7 +94,7 @@ def init_app(app):
         lots = ParkingLot.query.all()
         bookings = Reservation.query.all()
 
-        # KPI summary (unused here but kept)
+       
         total_spots     = ParkingSpot.query.count()
         occupied_spots  = ParkingSpot.query.filter_by(status='O').count()
         available_spots = total_spots - occupied_spots
@@ -121,14 +121,14 @@ def init_app(app):
     @app.route("/add_lot", methods=["GET", "POST"])
     def add_lot():
         if request.method == "POST":
-            prime_location_name = request.form.get("prime_location_name")  # 👈 add this line
+            prime_location_name = request.form.get("prime_location_name")  
             name = request.form.get("name")
             location = request.form.get("location")
             price = float(request.form.get("price"))
             total_spots = int(request.form.get("total_spots"))
 
             new_lot = ParkingLot(
-                prime_location_name=prime_location_name,  # 👈 add this line too
+                prime_location_name=prime_location_name,  
                 name=name,
                 location=location,
                 price_per_hour=price,
@@ -185,7 +185,7 @@ def init_app(app):
     def spot_detail(spot_id):
         # Look up the spot itself
         spot = ParkingSpot.query.get_or_404(spot_id)
-        # (Optional) fetch its latest reservation if you want to show details
+   
         reservation = Reservation.query \
             .filter_by(spot_id=spot.id) \
             .order_by(Reservation.id.desc()) \
@@ -444,7 +444,7 @@ def init_app(app):
             spot_id=available_spot.id,
             vehicle_no=vehicle_no,
             parking_timestamp=datetime.now(),
-            cost=lot.price_per_hour  # or calculate cost later on release
+            cost=lot.price_per_hour  
         )
         available_spot.status = 'O'
         db.session.add(new_reservation)
@@ -482,7 +482,7 @@ def init_app(app):
     @app.route('/delete_spot/<int:spot_id>')
     def delete_spot(spot_id):
         spot = ParkingSpot.query.get_or_404(spot_id)
-        if spot.status == 'A':  # Only delete if Available
+        if spot.status == 'A':  
             db.session.delete(spot)
             db.session.commit()
             flash(f"Spot {spot_id} deleted.", 'success')
@@ -497,12 +497,13 @@ def init_app(app):
         if spot.status == 'O':
             spot.status = 'A'
 
-        # ✅ Add checkout time and compute duration-based cost
             end_time = datetime.now()
             duration_hours = (end_time - reservation.parking_timestamp).total_seconds() / 3600
             lot = ParkingLot.query.get(spot.lot_id)
 
+            reservation.leaving_timestamp = end_time
             reservation.cost = round(duration_hours * lot.price_per_hour, 2)
+
             db.session.commit()
 
             flash(f'Reservation ID {res_id} has been released! Cost: ₹{reservation.cost:.2f}', 'success')
