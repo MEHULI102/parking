@@ -3,7 +3,7 @@ from datetime import datetime
 
 db = SQLAlchemy()
 
-# ===================== USER INFO =====================
+
 class User_Info(db.Model):
     __tablename__ = "user_info"
     id = db.Column(db.Integer, primary_key=True)
@@ -30,7 +30,7 @@ class User_Info(db.Model):
             'role': self.role
         }
 
-# ===================== PARKING LOT =====================
+
 class ParkingLot(db.Model):
     __tablename__ = "parking_lot"
     id = db.Column(db.Integer, primary_key=True)
@@ -64,7 +64,7 @@ class ParkingLot(db.Model):
             'available_spots': self.available_spots
         }
 
-# ===================== PARKING SPOT =====================
+
 class ParkingSpot(db.Model):
     __tablename__ = "parking_spots"
     id = db.Column(db.Integer, primary_key=True)
@@ -82,7 +82,6 @@ class ParkingSpot(db.Model):
     
     
 
-# ===================== RESERVATION =====================
 class Reservation(db.Model):
     __tablename__ = "reservations"
     id = db.Column(db.Integer, primary_key=True)
