@@ -77,7 +77,8 @@
                           data-res-id="{{ res.id }}"
                           data-vehicle-no="{{ res.vehicle_no }}"
                           data-location="{{ res.lot.location }}"
-                          data-parking-time="{{ res.parking_timestamp }}">
+                          data-parking-time="{{ res.parking_timestamp }}"
+                          data-price="{{ res.lot.price_per_hour }}">
                     Release
                   </button>
                   {% else %}
@@ -186,7 +187,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          <p><strong>Spot ID:</strong> <span id="modal-spot-id-release"></span></p>
+          <p><strong>Reservation ID:</strong> <span id="modal-spot-id-release"></span></p>
           <p><strong>Vehicle No:</strong> <span id="modal-vehicle-no"></span></p>
           <p><strong>Location:</strong> <span id="modal-location"></span></p>
           <p><strong>Parking Time:</strong> <span id="modal-parking-time"></span></p>
@@ -231,11 +232,12 @@
     const vehicleNo = button.getAttribute('data-vehicle-no');
     const location = button.getAttribute('data-location');
     const parkingTime = button.getAttribute('data-parking-time');
+    const pricePerHour = parseFloat(button.getAttribute('data-price'));
 
     const parkingDate = new Date(parkingTime);
     const releaseDate = new Date();
     const durationHours = ((releaseDate - parkingDate) / (1000 * 60 * 60)).toFixed(2);
-    const estimatedCost = (durationHours * 50).toFixed(2); // ₹50/hr estimation, adjust if dynamic later
+    const estimatedCost = (durationHours * pricePerHour).toFixed(2);
 
     document.getElementById('modal-spot-id-release').innerText = resId;
     document.getElementById('modal-vehicle-no').innerText = vehicleNo;
