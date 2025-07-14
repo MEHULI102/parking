@@ -6,48 +6,17 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <style>
-    body {
-      background-color: #fdfcf8;
-    }
-    .detail-card {
-      border-radius: 15px;
-      background: #e7f6f2;
-      border: 1px solid #b2dfdb;
-    }
-    .detail-card h5 {
-      color: #00796b;
-    }
-    .section-title {
-      font-size: 1.15rem;
-      font-weight: 600;
-      margin-top: 20px;
-      color: #4e342e;
-    }
-    .badge-status {
-      font-size: 0.9rem;
-      padding: 0.4em 0.7em;
-    }
-    .status-available {
-      background-color: #81c784;
-    }
-    .status-occupied {
-      background-color: #ffb74d;
-    }
-    .btn-custom {
-      background-color: #ffca28;
-      border: none;
-      color: #212121;
-    }
-    .btn-custom:hover {
-      background-color: #ffc107;
-    }
-    .highlight {
-      font-weight: 600;
-      color: #37474f;
-    }
-    hr {
-      border-top: 1px solid #bdbdbd;
-    }
+    body { background-color: #fdfcf8; }
+    .detail-card { border-radius: 15px; background: #e7f6f2; border: 1px solid #b2dfdb; }
+    .detail-card h5 { color: #00796b; }
+    .section-title { font-size: 1.15rem; font-weight: 600; margin-top: 20px; color: #4e342e; }
+    .badge-status { font-size: 0.9rem; padding: 0.4em 0.7em; }
+    .status-available { background-color: #81c784; }
+    .status-occupied { background-color: #ffb74d; }
+    .btn-custom { background-color: #ffca28; border: none; color: #212121; }
+    .btn-custom:hover { background-color: #ffc107; }
+    .highlight { font-weight: 600; color: #37474f; }
+    hr { border-top: 1px solid #bdbdbd; }
   </style>
 </head>
 <body class="p-4">
@@ -55,7 +24,7 @@
 <div class="container">
 
   <div class="card p-4 shadow-sm mb-4 detail-card">
-    <h4 class="mb-3" style="color:#00796b;">🚗 Parking Spot #{{ spot.id }}</h4>
+    <h4 class="mb-3">🚗 Parking Spot #{{ spot.id }}</h4>
 
     <form method="POST" action="#">
       <div class="mb-3">
@@ -74,11 +43,23 @@
   <div class="card p-4 shadow-sm detail-card">
     <h5 class="mb-3">📝 Reservation Details</h5>
     <p><span class="highlight">Reservation ID:</span> {{ reservation.id }}</p>
-    <p><span class="highlight">Check-in Time:</span> {{ reservation.in_time }}</p>
-    <p><span class="highlight">Parking Cost:</span> ₹{{ reservation.cost }}</p>
+    <p><span class="highlight">Check-in Time:</span>
+       {{ reservation.parking_timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+
+    {% if not reservation.leaving_timestamp %}
+      <p><span class="highlight">Estimated Cost (till now):</span>
+         ₹{{ ((now().timestamp() - reservation.parking_timestamp.timestamp()) / 3600 * reservation.spot.lot.price_per_hour) | round(2) }}</p>
+    {% else %}
+      <p><span class="highlight">Check-out Time:</span>
+         {{ reservation.leaving_timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+      <p><span class="highlight">Total Cost:</span> ₹{{ reservation.cost }}</p>
+    {% endif %}
+
     <p>
       <span class="highlight">Status:</span>
-      <span class="badge badge-status status-occupied">Active</span>
+      <span class="badge badge-status {% if spot.status == 'O' %}status-occupied{% else %}status-available{% endif %}">
+        {% if spot.status == 'O' %}Active{% else %}Available{% endif %}
+      </span>
     </p>
 
     {% if user %}

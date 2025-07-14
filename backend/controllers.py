@@ -152,13 +152,30 @@ def init_app(app):
         lot = ParkingLot.query.get_or_404(lot_id)
 
         if request.method == "POST":
+            lot.prime_location_name = request.form.get("prime_location_name")
             lot.name = request.form.get("name")
-            lot.location = request.form.get("location")
+            lot.address = request.form.get("address")
+            lot.pincode = request.form.get("pincode")
             lot.price_per_hour = float(request.form.get("price"))
+            new_total = int(request.form.get("total_spots"))
+
+            delta = new_total - lot.total_spots
+            if delta > 0:
+                for _ in range(delta):
+                    spot = ParkingSpot(lot_id=lot.id, status='A')
+                    db.session.add(spot)
+            elif delta < 0:
+            
+                empty_spots = ParkingSpot.query.filter_by(lot_id=lot.id, status='A').limit(-delta).all()
+                for spot in empty_spots:
+                    db.session.delete(spot)
+
+            lot.total_spots = new_total
             db.session.commit()
             return redirect(url_for('admin_dashboard'))
 
         return render_template("edit_lot.html", lot=lot)
+
 
     @app.route("/delete_lot/<int:lot_id>")
     def delete_lot(lot_id):
@@ -181,23 +198,29 @@ def init_app(app):
         bookings = Reservation.query.all()
         return render_template("admin_bookings.html", bookings=bookings)
 
+    from datetime import datetime
+
     @app.route("/spot/<int:spot_id>")
     def spot_detail(spot_id):
-       
         spot = ParkingSpot.query.get_or_404(spot_id)
-   
+
         reservation = Reservation.query \
             .filter_by(spot_id=spot.id) \
             .order_by(Reservation.id.desc()) \
             .first()
+
         user = None
         if reservation:
             user = User_Info.query.get(reservation.user_id)
-        return render_template("admin_spot_detail.html",
-                               spot=spot,
-                               reservation=reservation,
-                               user=user)
-    
+
+        return render_template(
+            "admin_spot_detail.html",
+            spot=spot,
+            reservation=reservation,
+            user=user,
+            now=datetime.now
+        )
+
     @app.route("/delete_booking/<int:booking_id>")
     def delete_booking(booking_id):
         booking = Reservation.query.get_or_404(booking_id)
