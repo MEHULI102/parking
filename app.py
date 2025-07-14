@@ -6,25 +6,24 @@ def create_app():
     app = Flask(__name__)
     app.debug = True
 
-    # Configurations
+  
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///parking.sqlite3"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    # Secret key for session management
-    app.secret_key = 'thisisaverysecretkey123'  # 🔑 required for using `session`
+    
+    app.secret_key = 'thisisaverysecretkey123'
 
-    # Initialize database
+    
     db.init_app(app)
 
-    # Create tables if they don't exist
+    
     with app.app_context():
         db.create_all()
 
-    # Import and initialize routes/controllers
+   
     import backend.controllers
     backend.controllers.init_app(app)
 
-    # Custom Jinja filter for 'timeago'
     def timeago(value):
         if not isinstance(value, datetime):
             return value
