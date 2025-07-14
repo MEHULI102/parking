@@ -11,7 +11,6 @@
 <body>
 <div class="main-container">
 
-
   <nav class="navbar navbar-expand-lg dashboard-navbar">
     <div class="container-fluid">
       <span class="navbar-brand">Welcome, {{ user.full_name }}!</span>
@@ -25,7 +24,6 @@
       </div>
     </div>
   </nav>
-
 
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -42,7 +40,6 @@
 
   <div class="container py-4">
     <div class="dashboard-border">
-
 
       <h5 class="section-title text-center mb-3">🚗 Recent Parking History</h5>
       <div class="card glass-card">
@@ -66,17 +63,25 @@
                 <td>{{ res.vehicle_no }}</td>
                 <td>{{ res.parking_timestamp }}</td>
                 <td>
-                  {% if res.spot.status == 'O' %}
-                  <span class="badge bg-warning">Occupied</span>
+                  {% if res.leaving_timestamp == None %}
+                    <span class="badge bg-warning">Occupied</span>
                   {% else %}
-                  <span class="badge bg-success">Released</span>
+                    <span class="badge bg-success">Released</span>
                   {% endif %}
                 </td>
                 <td>
-                  {% if res.spot.status == 'O' %}
-                  <a href="/release/{{ res.id }}" class="btn btn-sm btn-danger"> Release</a>
+                  {% if res.leaving_timestamp == None %}
+                  <button class="btn btn-sm btn-danger"
+                          data-bs-toggle="modal"
+                          data-bs-target="#releaseModal"
+                          data-res-id="{{ res.id }}"
+                          data-vehicle-no="{{ res.vehicle_no }}"
+                          data-location="{{ res.lot.location }}"
+                          data-parking-time="{{ res.parking_timestamp }}">
+                    Release
+                  </button>
                   {% else %}
-                  <a href="/parkedout/{{ res.id }}" class="btn btn-sm btn-success"> Parked Out</a>
+                  <a href="/parkedout/{{ res.id }}" class="btn btn-sm btn-success">Parked Out</a>
                   {% endif %}
                 </td>
               </tr>
@@ -87,7 +92,6 @@
       </div>
 
       <hr class="inner-divider">
-
 
       <h5 class="section-title text-center mb-3">🔍 Search Parking</h5>
       <div class="card glass-card">
@@ -123,9 +127,16 @@
                   {% endif %}
                 </td>
                 <td>
-                  {% if lot.available_spots > 0 %}
-                 
-                  <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#vehicleModal" data-lot-id="{{ lot.id }}">📖 Book Now</button>
+                  {% set available_spot = lot.spots | selectattr("status", "equalto", "A") | list | first %}
+                  {% if available_spot %}
+                  <button class="btn btn-sm btn-primary"
+                          data-bs-toggle="modal"
+                          data-bs-target="#vehicleModal"
+                          data-lot-id="{{ lot.id }}"
+                          data-spot-id="{{ available_spot.id }}"
+                          data-user-id="{{ user.id }}">
+                    📖 Book Now
+                  </button>
                   {% else %}
                   <button class="btn btn-secondary btn-sm" disabled>Not Available</button>
                   {% endif %}
@@ -142,21 +153,59 @@
   </div>
 </div>
 
-
+<!-- Vehicle Booking Modal -->
 <div class="modal fade" id="vehicleModal" tabindex="-1" aria-labelledby="vehicleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <form method="POST" id="vehicleForm">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="vehicleModalLabel">Enter Vehicle Number</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h5 class="modal-title">Book Parking Spot</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          <input type="text" name="vehicle_no" class="form-control" placeholder="e.g., WB12AB3456" required>
-          <input type="hidden" name="lot_id" id="modal-lot-id">
+          <div class="mb-2">
+            <label>Lot ID:</label>
+            <input type="text" id="modal-lot-id" class="form-control" readonly>
+          </div>
+          <div class="mb-2">
+            <label>Spot ID:</label>
+            <input type="text" id="modal-spot-id" class="form-control" readonly>
+          </div>
+          <div class="mb-2">
+            <label>User ID:</label>
+            <input type="text" id="modal-user-id" class="form-control" readonly>
+          </div>
+          <div class="mb-2">
+            <label>Vehicle Number:</label>
+            <input type="text" name="vehicle_no" class="form-control" placeholder="e.g., WB12AB3456" required>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-primary">Confirm Booking</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Release Modal -->
+<div class="modal fade" id="releaseModal" tabindex="-1" aria-labelledby="releaseModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="POST" id="releaseForm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Confirm Release</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Spot ID:</strong> <span id="modal-spot-id-release"></span></p>
+          <p><strong>Vehicle No:</strong> <span id="modal-vehicle-no"></span></p>
+          <p><strong>Location:</strong> <span id="modal-location"></span></p>
+          <p><strong>Parking Time:</strong> <span id="modal-parking-time"></span></p>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">Confirm Release</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         </div>
       </div>
     </form>
@@ -170,15 +219,38 @@
   vehicleModal.addEventListener('show.bs.modal', function (event) {
     const button = event.relatedTarget;
     const lotId = button.getAttribute('data-lot-id');
+    const spotId = button.getAttribute('data-spot-id');
+    const userId = button.getAttribute('data-user-id');
+
     document.getElementById('modal-lot-id').value = lotId;
+    document.getElementById('modal-spot-id').value = spotId;
+    document.getElementById('modal-user-id').value = userId;
   });
 
   document.getElementById('vehicleForm').addEventListener('submit', function (e) {
     e.preventDefault();
     const lotId = document.getElementById('modal-lot-id').value;
+    const spotId = document.getElementById('modal-spot-id').value;
     const form = e.target;
-    form.action = `/book/${lotId}`;
+    form.action = `/book/${lotId}/${spotId}`;
     form.submit();
+  });
+
+  const releaseModal = document.getElementById('releaseModal');
+  releaseModal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    const resId = button.getAttribute('data-res-id');
+    const vehicleNo = button.getAttribute('data-vehicle-no');
+    const location = button.getAttribute('data-location');
+    const parkingTime = button.getAttribute('data-parking-time');
+
+    document.getElementById('modal-spot-id-release').innerText = resId;
+    document.getElementById('modal-vehicle-no').innerText = vehicleNo;
+    document.getElementById('modal-location').innerText = location;
+    document.getElementById('modal-parking-time').innerText = parkingTime;
+
+    const form = document.getElementById('releaseForm');
+    form.action = `/release/${resId}`;
   });
 </script>
 

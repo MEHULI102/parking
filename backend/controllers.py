@@ -59,17 +59,17 @@ def init_app(app):
             pincode = request.form.get("pincode").strip()
             role = 1
 
-        # Check for existing username
+     
             if User_Info.query.filter_by(user_name=uname).first():
                 message = "Username already exists. Please choose another."
                 return render_template("register.html", message=message)
 
-        # Check for existing email
+      
             if User_Info.query.filter_by(email=email).first():
                 message = "Email already registered. Try logging in or use another."
                 return render_template("register.html", message=message)
 
-        # No conflicts — safe to register
+       
             new_user = User_Info(
                 full_name=full_name,
                 user_name=uname,
@@ -100,7 +100,7 @@ def init_app(app):
         available_spots = total_spots - occupied_spots
         total_revenue   = sum(b.cost for b in bookings)
 
-        # Attach counts and spot lists to each lot
+      
         for lot in lots:
             lot.occupied_count = ParkingSpot.query.filter_by(
                 lot_id=lot.id, status='O'
@@ -168,7 +168,7 @@ def init_app(app):
         if occupied_spots > 0:
             return "<h4 style='color:red;'>Cannot delete — spots are currently occupied.</h4><a href='/admin_dashboard'>Back to Dashboard</a>"
 
-    # Delete available spots and the lot
+   
         ParkingSpot.query.filter_by(lot_id=lot.id).delete()
         db.session.delete(lot)
         db.session.commit()
@@ -183,7 +183,7 @@ def init_app(app):
 
     @app.route("/spot/<int:spot_id>")
     def spot_detail(spot_id):
-        # Look up the spot itself
+       
         spot = ParkingSpot.query.get_or_404(spot_id)
    
         reservation = Reservation.query \
@@ -225,7 +225,7 @@ def init_app(app):
         revenues = []
 
         for lot in lots:
-        # Get spot IDs for this lot
+        
             spot_ids = [s.id for s in ParkingSpot.query.filter_by(lot_id=lot.id).all()]
         
             if spot_ids:
@@ -272,7 +272,7 @@ def init_app(app):
 
         suggestions = []
 
-        # Fetch IDs and names for suggestions
+        
         user_ids = [str(u.id) for u in User_Info.query.filter(User_Info.id.like(f"%{query}%")).all()]
         lot_names = [l.name for l in ParkingLot.query.filter(ParkingLot.name.like(f"%{query}%")).all()]
         lot_locations = [l.location for l in ParkingLot.query.filter(ParkingLot.location.like(f"%{query}%")).all()]
@@ -429,22 +429,31 @@ def init_app(app):
             flash('Vehicle number is required.', 'danger')
             return redirect(url_for('user_dashboard'))
 
+    
+        existing_reservation = Reservation.query.filter_by(
+            vehicle_no=vehicle_no,
+            user_id=session['user_id'],
+            leaving_timestamp=None
+        ).first()
+
+        if existing_reservation:
+            flash(f"Vehicle {vehicle_no} is already parked!", 'danger')
+            return redirect(url_for('user_dashboard'))
+
         lot = ParkingLot.query.get_or_404(lot_id)
 
-    # Find an available spot
         available_spot = ParkingSpot.query.filter_by(lot_id=lot_id, status='A').first()
 
         if not available_spot:
             flash('No available spots in this lot.', 'danger')
             return redirect(url_for('user_dashboard'))
 
-    # Reserve the spot
         new_reservation = Reservation(
             user_id=session['user_id'],
             spot_id=available_spot.id,
             vehicle_no=vehicle_no,
             parking_timestamp=datetime.now(),
-            cost=lot.price_per_hour  
+            cost=lot.price_per_hour
         )
         available_spot.status = 'O'
         db.session.add(new_reservation)
@@ -452,6 +461,51 @@ def init_app(app):
 
         flash(f'Spot {available_spot.id} at {lot.location} booked successfully!', 'success')
         return redirect(url_for('user_dashboard'))
+
+
+    @app.route('/book/<int:lot_id>/<int:spot_id>', methods=['POST'])
+    def book_spot_with_spot(lot_id, spot_id):
+        if 'user_id' not in session:
+            return redirect('/login')
+
+        vehicle_no = request.form.get('vehicle_no')
+        if not vehicle_no:
+            flash('Vehicle number is required.', 'danger')
+            return redirect(url_for('user_dashboard'))
+
+        existing_reservation = Reservation.query.filter_by(
+            vehicle_no=vehicle_no,
+            user_id=session['user_id'],
+            leaving_timestamp=None
+        ).first()
+
+        if existing_reservation:
+            flash(f"Vehicle {vehicle_no} is already parked!", 'danger')
+            return redirect(url_for('user_dashboard'))
+
+        lot = ParkingLot.query.get_or_404(lot_id)
+        spot = ParkingSpot.query.get_or_404(spot_id)
+
+        if spot.status != 'A':
+            flash('Selected spot is not available.', 'danger')
+            return redirect(url_for('user_dashboard'))
+
+        new_reservation = Reservation(
+            user_id=session['user_id'],
+            spot_id=spot.id,
+            vehicle_no=vehicle_no,
+            parking_timestamp=datetime.now(),
+            cost=lot.price_per_hour
+        )
+        spot.status = 'O'
+        db.session.add(new_reservation)
+        db.session.commit()
+
+        flash(f'Spot {spot.id} at {lot.location} booked successfully!', 'success')
+        return redirect(url_for('user_dashboard'))
+
+    
+       
 
     @app.route('/api/spots')
     def api_spots():
@@ -489,7 +543,7 @@ def init_app(app):
         else:
             flash(f"Cannot delete occupied spot.", 'danger')
         return redirect(url_for('admin_dashboard'))
-    @app.route('/release/<int:res_id>')
+    @app.route('/release/<int:res_id>', methods=['GET', 'POST'])
     def release_parking(res_id):
         reservation = Reservation.query.get_or_404(res_id)
         spot = ParkingSpot.query.get(reservation.spot_id)
